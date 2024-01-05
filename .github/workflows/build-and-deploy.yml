@@ -32,7 +32,12 @@ jobs:
         run: dotnet test --configuration ${{ vars.BUILDCONFIGURATION }} --no-build
 
       - name: Publish Functions
-        run: dotnet publish DDD.Functions/DDD.Functions.csproj --configuration ${{ vars.BUILDCONFIGURATION }} --output ${{ github.workspace }}/${{ github.sha }}
+        run: dotnet publish DDD.Functions/DDD.Functions.csproj --configuration ${{ vars.BUILDCONFIGURATION }} --output publish
+
+      - name: Zip Published Files
+        run: |
+          cd publish
+          zip -r ${{ github.sha }}.zip .
 
       - name: Azure login
         uses: azure/login@v1
@@ -40,13 +45,12 @@ jobs:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-#        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
 
       - name: Upload to blob storage
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --auth-mode login --overwrite -d artifacts --account-name ${{ vars.STORAGEACCOUNTNAME }} -s ${{ github.workspace }}/${{ github.sha }}
+            az storage blob upload-batch --auth-mode login --overwrite -d artifacts --account-name ${{ vars.STORAGEACCOUNTNAME }} -s ${{ github.workspace }}/publish/${{ github.sha }}.zip
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v4
