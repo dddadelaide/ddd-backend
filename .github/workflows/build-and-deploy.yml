@@ -5,7 +5,7 @@ on:
     branches:
       - master
   pull_request:
-    
+
 permissions:
   id-token: write
   contents: read
@@ -46,7 +46,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --auth-mode login -d ${{ github.sha }}  --account-name ${{ vars.STORAGEACCOUNTNAME }} -s ${{ github.workspace }}/${{ github.sha }}
+            az storage blob upload-batch --auth-mode login --overwrite -d artifacts --account-name ${{ vars.STORAGEACCOUNTNAME }} -s ${{ github.workspace }}/${{ github.sha }}
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v4
