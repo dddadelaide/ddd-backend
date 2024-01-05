@@ -50,7 +50,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az storage blob upload-batch --auth-mode login --overwrite -d artifacts --account-name ${{ vars.STORAGEACCOUNTNAME }} -s ${{ github.workspace }}/publish/${{ github.sha }}.zip
+            az storage blob upload --auth-mode login --overwrite --account-name ${{ vars.STORAGEACCOUNTNAME }} --container-name artifacts --name ${{ github.sha }}.zip --file ${{ github.workspace }}/publish/${{ github.sha }}.zip
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v4
