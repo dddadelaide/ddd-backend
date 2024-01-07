@@ -86,6 +86,11 @@ jobs:
             echo 'URL='$(az storage blob url --auth-mode login --account-name ${{ vars.STORAGEACCOUNTNAME }} --container-name artifacts --name ${{ github.sha }}.zip)  >> "$GITHUB_OUTPUT"
             echo 'TOKEN='$(az storage blob generate-sas --auth-mode login --as-user --account-name ${{ vars.STORAGEACCOUNTNAME }} --container-name artifacts --name ${{ github.sha }}.zip --permissions r --expiry '2099-01-01T12:00Z')  >> "$GITHUB_OUTPUT"
 
+      - name: Check SAS token
+        run: |
+          echo "The blob URL is: ${{ steps.sas-token.outputs.URL }}"
+          echo "The SAS Token is: ${{ steps.sas-token.outputs.TOKEN }}"
+
       - name: Deploy infrastructure
         shell: pwsh
         run: |
@@ -97,8 +102,8 @@ jobs:
           -AppEnvironment ${{ vars.AppEnvironment }} `
           -AppServicePlanResourceGroup ${{ vars.AppServicePlanResourceGroup }} `
           -AppServicePlanName ${{ vars.AppServicePlanName }} `
-          -NewSessionNotificationLogicAppUrl "${{ vars.NewSessionNotificationLogicAppUrl }}" `
-          -DeploymentZipUrl "${{ steps.sas-token.outputs.URL }}${{ steps.sas-token.outputs.TOKEN }}" `
+          -NewSessionNotificationLogicAppUrl ${{ vars.NewSessionNotificationLogicAppUrl }} `
+          -DeploymentZipUrl ${{ steps.sas-token.outputs.URL }}${{ steps.sas-token.outputs.TOKEN }} `
           -SessionizeApiKey ${{ vars.SessionizeApiKey }} `
           -TitoApiBearerToken ${{ vars.TitoApiBearerToken }} `
           -SubmissionsAvailableFrom ${{ vars.SubmissionsAvailableFrom }} `
@@ -107,19 +112,19 @@ jobs:
           -ConferenceInstance "${{ vars.ConferenceInstance }}" `
           -VotingAvailableFrom ${{ vars.VotingAvailableFrom }} `
           -VotingAvailableTo ${{ vars.VotingAvailableTo }} `
-          -MinVotes "${{ vars.MinVotes }}" `
-          -MaxVotes "${{ vars.MaxVotes }}" `
+          -MinVotes ${{ vars.MinVotes }} `
+          -MaxVotes ${{ vars.MaxVotes }} `
           -StopSyncingSessionsFrom ${{ vars.StopSyncingSessionsFrom }} `
-          -TitoEventId "${{ vars.TitoEventId }}" `
+          -TitoEventId ${{ vars.TitoEventId }} `
           -StopSyncingTitoFrom ${{ vars.StopSyncingTitoFrom }} `
-          -AppInsightsApplicationId "${{ vars.AppInsightsApplicationId }}" `
-          -AppInsightsApplicationKey "${{ vars.AppInsightsApplicationKey }}" `
+          -AppInsightsApplicationId ${{ vars.AppInsightsApplicationId }} `
+          -AppInsightsApplicationKey ${{ vars.AppInsightsApplicationKey }} `
           -StartSyncingAppInsightsFrom ${{ vars.StartSyncingAppInsightsFrom }} `
           -StopSyncingAppInsightsFrom ${{ vars.StopSyncingAppInsightsFrom }} `
           -StopSyncingAgendaFrom ${{ vars.StopSyncingAgendaFrom }} `
-          -SessionizeAgendaApiKey "${{ vars.SessionizeAgendaApiKey }}" `
-          -TitoAccountId "${{ vars.TitoAccountId }}" `
-          -TitoWebhookSecret "${{ vars.TitoWebhookSecret }}" `
+          -SessionizeAgendaApiKey ${{ vars.SessionizeAgendaApiKey }} `
+          -TitoAccountId ${{ vars.TitoAccountId }} `
+          -TitoWebhookSecret ${{ vars.TitoWebhookSecret }} `
           -TicketNumberWhileVoting ${{ vars.TicketNumberWhileVoting }} `
           -FeedbackAvailableFrom ${{ vars.FeedbackAvailableFrom }} `
           -FeedbackAvailableTo ${{ vars.FeedbackAvailableTo }} `
