@@ -83,13 +83,11 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            echo 'URL='$(az storage blob url --auth-mode login --account-name ${{ vars.STORAGEACCOUNTNAME }} --container-name artifacts --name ${{ github.sha }}.zip)  >> "$GITHUB_OUTPUT"
-            echo 'TOKEN='$(az storage blob generate-sas --auth-mode login --as-user --account-name ${{ vars.STORAGEACCOUNTNAME }} --container-name artifacts --name ${{ github.sha }}.zip --permissions r --expiry '2099-01-01T12:00Z')  >> "$GITHUB_OUTPUT"
+            echo 'URL='$(az storage blob generate-sas --auth-mode key --account-key ${{ secrets.STORAGEACCOUNTKEY }} --account-name ${{ vars.STORAGEACCOUNTNAME }} --container-name artifacts --name ${{ github.sha }}.zip --permissions r --expiry '2099-01-01T12:00Z' --full-uri)  >> "$GITHUB_OUTPUT"
 
       - name: Check SAS token
         run: |
-          echo "The blob URL is: ${{ steps.sas-token.outputs.URL }}"
-          echo "The SAS Token is: ${{ steps.sas-token.outputs.TOKEN }}"
+          echo The blob URL is: ${{ steps.sas-token.outputs.URL }}
 
       - name: Deploy infrastructure
         shell: pwsh
@@ -103,7 +101,7 @@ jobs:
           -AppServicePlanResourceGroup ${{ vars.AppServicePlanResourceGroup }} `
           -AppServicePlanName ${{ vars.AppServicePlanName }} `
           -NewSessionNotificationLogicAppUrl ${{ vars.NewSessionNotificationLogicAppUrl }} `
-          -DeploymentZipUrl ${{ steps.sas-token.outputs.URL }}${{ steps.sas-token.outputs.TOKEN }} `
+          -DeploymentZipUrl ${{ steps.sas-token.outputs.URL }} `
           -SessionizeApiKey ${{ vars.SessionizeApiKey }} `
           -TitoApiBearerToken ${{ vars.TitoApiBearerToken }} `
           -SubmissionsAvailableFrom ${{ vars.SubmissionsAvailableFrom }} `
