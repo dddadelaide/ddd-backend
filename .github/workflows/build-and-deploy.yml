@@ -59,12 +59,17 @@ jobs:
   deploy:
     permissions:
       id-token: write
-      contents: none
+      contents: read
     runs-on: ubuntu-latest
     needs: build
     environment: test
 
     steps:
+      # TODO: It would be nice to do the deployment without checking out the repository again. See if we can access a published artifact from the build in the deployment.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Azure login
         uses: azure/login@v1
@@ -84,7 +89,7 @@ jobs:
       - name: Deploy infrastructure
         shell: pwsh
         run: |
-          .\infrastructure\Deploy.ps1 `
+          ./infrastructure/Deploy.ps1 `
           -TenantId ${{ vars.AZURE_TENANT_ID }} `
           -SubscriptionId ${{ vars.AZURE_SUBSCRIPTION_ID }} `
           -ConferenceName ${{ vars.ConferenceName }} `
