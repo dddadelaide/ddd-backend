@@ -89,6 +89,11 @@ jobs:
         run: |
           echo The blob URL is: ${{ steps.sas-token.outputs.URL }}
 
+      - name: Setup Az PowerShell module
+        shell: pwsh
+        run: |
+          Install-Module -Name Az -Repository PSGallery -Force
+
       - name: Deploy infrastructure
         shell: pwsh
         run: |
