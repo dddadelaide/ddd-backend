@@ -90,16 +90,6 @@ jobs:
         run: |
           echo The blob URL is: ${{ steps.sas-token.outputs.URL }}
 
-      - name: Setup Az PowerShell module
-        shell: pwsh
-        run: |
-          Install-Module -Name Az -Repository PSGallery -Force
-
-      # - name: Connect Az account
-      #   shell: pwsh
-      #   run: |
-      #     Connect-AzAccount -ServicePrincipal -ApplicationId ${{ vars.AZURE_CLIENT_ID }} -Tenant ${{ vars.AZURE_TENANT_ID }} -SubscriptionId ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
       - name: Deploy infrastructure
         shell: pwsh
         run: |
