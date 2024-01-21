@@ -270,3 +270,4 @@ infrastructure/local.private.json
 .vscode/
 
 DDD.Functions/local.settings.dev.json
+/infrastructure/arm-ttk**

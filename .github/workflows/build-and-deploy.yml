@@ -104,6 +104,7 @@ jobs:
           -TenantId ${{ vars.AZURE_TENANT_ID }} `
           -SubscriptionId ${{ vars.AZURE_SUBSCRIPTION_ID }} `
           -ConferenceName ${{ vars.ConferenceName }} `
+          -ConferenceShortName ${{ vars.ConferenceShortName }} `
           -Location "${{ vars.Location }}" `
           -AppEnvironment ${{ vars.AppEnvironment }} `
           -AppServicePlanResourceGroup ${{ vars.AppServicePlanResourceGroup }} `
