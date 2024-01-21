@@ -46,7 +46,7 @@ function Get-Parameters() {
     "functionsAppName"                  = "$ConferenceName-functions-$AppEnvironment".ToLower();
     "storageName"                       = "$($ConferenceShortName)functions$AppEnvironment".ToLower();
     "storageType"                       = "Standard_LRS";
-    "dataStorageName"                   = "$($ConferenceName)data$AppEnvironment".ToLower();
+    "dataStorageName"                   = "$($ConferenceShortName)data$AppEnvironment".ToLower();
     "dataStorageType"                   = "Standard_GRS";
     "stopSyncingSessionsFrom"           = $StopSyncingSessionsFrom;
     "newSessionNotificationLogicAppUrl" = $NewSessionNotificationLogicAppUrl;
@@ -78,9 +78,9 @@ function Get-Parameters() {
     "feedbackAvailableTo"               = $FeedbackAvailableTo;
     "eloPasswordPhrase"                 = $EloPasswordPhrase;
     "eloAllowedTimeInSecondsToSubmit"   = $EloAllowedTimeInSecondsToSubmit;
-    "eloUserSessionStoreAccountName"                = "$($ConferenceName)data$AppEnvironment".ToLower();
-    "eloUserSessionStoreDatabaseName"               = "$($ConferenceName)data$AppEnvironment".ToLower();
-    "eloUserSessionStoreContainerName"              = "$($ConferenceName)-$AppEnvironment-sessions".ToLower();
+    "eloUserSessionStoreAccountName"                = "$($ConferenceShortName)data$AppEnvironment".ToLower();
+    "eloUserSessionStoreDatabaseName"               = "$($ConferenceShortName)data$AppEnvironment".ToLower();
+    "eloUserSessionStoreContainerName"              = "$($ConferenceShortName)-$AppEnvironment-sessions".ToLower();
   }
 }
 
