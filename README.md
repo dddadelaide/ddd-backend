@@ -1,5 +1,7 @@
 # DDD Backend
 
+[![Build and Deploy](https://github.com/dddadelaide/ddd-backend/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/dddadelaide/ddd-backend/actions/workflows/build-and-deploy.yml)
+
 This project contains backend functionality to run the DDD conferences, including:
 
 * Syncing data from [Sessionize](https://sessionize.com/) to Azure Table Storage (tenanted by conference year) for submitted sessions (and submitters) and separate to that, selected sessions (and presenters)
