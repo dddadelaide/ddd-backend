@@ -17,7 +17,7 @@ This project contains backend functionality to run the DDD conferences, includin
 
 * VSCode (<https://code.visualstudio.com/>) or your preferred IDE
 * Dotnet Core 3.1 (<https://dotnet.microsoft.com/en-us/download/dotnet/3.1>)
-* Azure Functions Core Tools(<https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local>)
+* Azure Functions Core Tools(<https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local>)~~~~
 
 ### Commands
 
@@ -62,24 +62,33 @@ This project contains backend functionality to run the DDD conferences, includin
 
 ## Infrastructure Prerequisites
 
+### Initial Infrastructure
+
+Before deploying the application, a small amount of Azure infrastructure needs to be created. Create a resource group containing:
+
+* A storage account and container to host the build artifacts
+* An app service plan (Needs to be 'Basic' or above to run the functions app)
+* An EntraID app registration with three associated federated credentials (substitute {org/repo} for your org/repo):
+  * repo:{org/repo}:ref:refs/heads/master
+  * repo:{org/repo}:pull_request
+  * repo:{org/repo}:environment:test
+* A role assignemnt of `Contributor` to your subscription (or associated granular role) for your app registration's service principal
+
+### AppInsights Voting Behaviour
+
 The backend application depends on programmatic access to the [Frontend Website's](https://github.com/dddwa/dddperth-website) Application Insights to pull and store information on voting behavior.
 
 To supply this access, create an API key with `Read telemetry` permissions within the frontend website's Application Insights instance in the Azure Portal, and enter the Application ID and Key presented into the `AppInsightsApplicationId` and `AppInsightsApplicationKey` parameters.
 
-## Setting up Continuous Delivery in VSTS
+## Setting up Continuous Delivery in Github Actions
 
-VSTS doesn't yet support .yml files for Continuous Delivery (Release) so the steps to set it up are:
+The build and deploy workflow can be found in `./github/workflows/build-and-deploy.yml`.
 
-* Install [SAS Token VSTS extension](https://marketplace.visualstudio.com/items?itemName=pascalnaber.PascalNaber-Xpirit-CreateSasToken)
-  * todo: Just add it to Deploy.ps1
-* Create the release definition triggered by the CI build
-* Add a task for the SAS token generation for the storage account you persisted deployments to set the output variables to `DeploymentZipUri` and `DeploymentZipToken` respectively, recommend setting the timeout to a big number so it's always available (e.g. `1000000`), permission should just be `r`
-* Add an Azure PowerShell task against your subscription and:
-  * `$(System.DefaultWorkingDirectory)/{CI build name}/infrastructure/Deploy.ps1` as the script file path
-  * `` as the script arguments
-* Add variables, e.g.:
-    ![Variables](vsts-cd-variables.png)
-* Profit!
+For this to run, you'll need to:
+
+* [Define variables and secrets in your GitHub project](https://docs.github.com/en/actions/learn-github-actions/variables#defining-configuration-variables-for-multiple-workflows) to match the variables required by `./github/workflows/build-and-deploy.yml`. `Ctrl+f vars.` and `Ctrl + f secrets.` your way to success to discover the necessary variables and provide appropriate values.
+
+Hot tip: your app service plan needs to be in the same azure region as your azure web app, or the deployment will fail with a less-than-helpful error message.
 
 ## New Session Notification Logic App
 
