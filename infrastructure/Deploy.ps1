@@ -3,6 +3,7 @@ Param (
   [string] [Parameter(Mandatory = $true)] $TenantId,
   [string] [Parameter(Mandatory = $true)] $Location,
   [string] [Parameter(Mandatory = $true)] $ConferenceName,
+  [string] [Parameter(Mandatory = $true)] $ConferenceShortName,
   [string] [Parameter(Mandatory = $true)] $AppEnvironment,
   [string] [Parameter(Mandatory = $true)] $AppServicePlanResourceGroup,
   [string] [Parameter(Mandatory = $true)] $AppServicePlanName,
@@ -42,10 +43,10 @@ Param (
 function Get-Parameters() {
   return @{
     "serverFarmResourceId"              = "/subscriptions/$SubscriptionId/resourceGroups/$AppServicePlanResourceGroup/providers/Microsoft.Web/serverfarms/$AppServicePlanName";
-    "functionsAppName"                  = "$ConferenceName-functions-$AppEnvironment".ToLower();
-    "storageName"                       = "$($ConferenceName)functions$AppEnvironment".ToLower();
+    "functionsAppName"                  = "$ConferenceShortName-functions-$AppEnvironment".ToLower();
+    "storageName"                       = "$($ConferenceShortName)functions$AppEnvironment".ToLower();
     "storageType"                       = "Standard_LRS";
-    "dataStorageName"                   = "$($ConferenceName)data$AppEnvironment".ToLower();
+    "dataStorageName"                   = "$($ConferenceShortName)data$AppEnvironment".ToLower();
     "dataStorageType"                   = "Standard_GRS";
     "stopSyncingSessionsFrom"           = $StopSyncingSessionsFrom;
     "newSessionNotificationLogicAppUrl" = $NewSessionNotificationLogicAppUrl;
@@ -77,9 +78,9 @@ function Get-Parameters() {
     "feedbackAvailableTo"               = $FeedbackAvailableTo;
     "eloPasswordPhrase"                 = $EloPasswordPhrase;
     "eloAllowedTimeInSecondsToSubmit"   = $EloAllowedTimeInSecondsToSubmit;
-    "eloUserSessionStoreAccountName"                = "$($ConferenceName)data$AppEnvironment".ToLower();
-    "eloUserSessionStoreDatabaseName"               = "$($ConferenceName)data$AppEnvironment".ToLower();
-    "eloUserSessionStoreContainerName"              = "$($ConferenceName)-$AppEnvironment-sessions".ToLower();
+    "eloUserSessionStoreAccountName"                = "$($ConferenceShortName)data$AppEnvironment".ToLower();
+    "eloUserSessionStoreDatabaseName"               = "$($ConferenceShortName)data$AppEnvironment".ToLower();
+    "eloUserSessionStoreContainerName"              = "$($ConferenceShortName)-$AppEnvironment-sessions".ToLower();
   }
 }
 

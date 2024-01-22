@@ -1,0 +1,141 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "3.1.x"
+
+      - name: Build
+        run: dotnet build --configuration ${{ vars.BUILDCONFIGURATION }}
+
+      - name: Test
+        run: dotnet test --configuration ${{ vars.BUILDCONFIGURATION }} --no-build
+
+      - name: Publish Functions
+        run: dotnet publish DDD.Functions/DDD.Functions.csproj --configuration ${{ vars.BUILDCONFIGURATION }} --output publish
+
+      - name: Zip Published Files
+        run: |
+          cd publish
+          zip -r ${{ github.sha }}.zip .
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Upload to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload --auth-mode login --overwrite --account-name ${{ vars.STORAGEACCOUNTNAME }} --container-name artifacts --name ${{ github.sha }}.zip --file ${{ github.workspace }}/publish/${{ github.sha }}.zip
+
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ github.workspace }}/${{ github.sha }}
+
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    needs: build
+    environment: test
+
+    steps:
+      # TODO: It would be nice to do the deployment without checking out the repository again. See if we can access a published artifact from the build in the deployment.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
+      - name: Generate a SAS token
+        id: sas-token
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            echo 'URL='$(az storage blob generate-sas --auth-mode key --account-key ${{ secrets.STORAGEACCOUNTKEY }} --account-name ${{ vars.STORAGEACCOUNTNAME }} --container-name artifacts --name ${{ github.sha }}.zip --permissions r --expiry '2099-01-01T12:00Z' --full-uri)  >> "$GITHUB_OUTPUT"
+
+      - name: Check SAS token
+        run: |
+          echo The blob URL is: ${{ steps.sas-token.outputs.URL }}
+
+      - name: Setup Az PowerShell module
+        shell: pwsh
+        run: |
+          Get-InstalledModule
+
+          Install-Module -Name Az -Repository PSGallery -Force
+
+      - name: Deploy infrastructure
+        shell: pwsh
+        run: |
+          ./infrastructure/Deploy.ps1 `
+          -TenantId ${{ vars.AZURE_TENANT_ID }} `
+          -SubscriptionId ${{ vars.AZURE_SUBSCRIPTION_ID }} `
+          -ConferenceName ${{ vars.ConferenceName }} `
+          -ConferenceShortName ${{ vars.ConferenceShortName }} `
+          -Location "${{ vars.Location }}" `
+          -AppEnvironment ${{ vars.AppEnvironment }} `
+          -AppServicePlanResourceGroup ${{ vars.AppServicePlanResourceGroup }} `
+          -AppServicePlanName ${{ vars.AppServicePlanName }} `
+          -NewSessionNotificationLogicAppUrl ${{ vars.NewSessionNotificationLogicAppUrl }} `
+          -DeploymentZipUrl ${{ steps.sas-token.outputs.URL }} `
+          -SessionizeApiKey ${{ vars.SessionizeApiKey }} `
+          -TitoApiBearerToken ${{ vars.TitoApiBearerToken }} `
+          -SubmissionsAvailableFrom ${{ vars.SubmissionsAvailableFrom }} `
+          -SubmissionsAvailableTo ${{ vars.SubmissionsAvailableTo }} `
+          -AnonymousSubmissions ${{ vars.AnonymousSubmissions }} `
+          -ConferenceInstance "${{ vars.ConferenceInstance }}" `
+          -VotingAvailableFrom ${{ vars.VotingAvailableFrom }} `
+          -VotingAvailableTo ${{ vars.VotingAvailableTo }} `
+          -MinVotes ${{ vars.MinVotes }} `
+          -MaxVotes ${{ vars.MaxVotes }} `
+          -StopSyncingSessionsFrom ${{ vars.StopSyncingSessionsFrom }} `
+          -TitoEventId ${{ vars.TitoEventId }} `
+          -StopSyncingTitoFrom ${{ vars.StopSyncingTitoFrom }} `
+          -AppInsightsApplicationId ${{ vars.AppInsightsApplicationId }} `
+          -AppInsightsApplicationKey ${{ vars.AppInsightsApplicationKey }} `
+          -StartSyncingAppInsightsFrom ${{ vars.StartSyncingAppInsightsFrom }} `
+          -StopSyncingAppInsightsFrom ${{ vars.StopSyncingAppInsightsFrom }} `
+          -StopSyncingAgendaFrom ${{ vars.StopSyncingAgendaFrom }} `
+          -SessionizeAgendaApiKey ${{ vars.SessionizeAgendaApiKey }} `
+          -TitoAccountId ${{ vars.TitoAccountId }} `
+          -TitoWebhookSecret ${{ vars.TitoWebhookSecret }} `
+          -TicketNumberWhileVoting ${{ vars.TicketNumberWhileVoting }} `
+          -FeedbackAvailableFrom ${{ vars.FeedbackAvailableFrom }} `
+          -FeedbackAvailableTo ${{ vars.FeedbackAvailableTo }} `
+          -IsSingleVoteEligibleForPrizeDraw ${{ vars.IsSingleVoteEligibleForPrizeDraw }} `
+          -WaitingListCanVoteWithEmail ${{ vars.WaitingListCanVoteWithEmail }} `
+          -EloPasswordPhrase ${{ vars.EloPasswordPhrase }} `
+          -EloAllowedTimeInSecondsToSubmit ${{ vars.EloAllowedTimeInSecondsToSubmit }}
