@@ -125,7 +125,7 @@ jobs:
           -TitoEventId ${{ vars.TitoEventId }} `
           -StopSyncingTitoFrom ${{ vars.StopSyncingTitoFrom }} `
           -AppInsightsApplicationId ${{ vars.AppInsightsApplicationId }} `
-          -AppInsightsApplicationKey ${{ vars.AppInsightsApplicationKey }} `
+          -AppInsightsApplicationKey ${{ secrets.AppInsightsApplicationKey }} `
           -StartSyncingAppInsightsFrom ${{ vars.StartSyncingAppInsightsFrom }} `
           -StopSyncingAppInsightsFrom ${{ vars.StopSyncingAppInsightsFrom }} `
           -StopSyncingAgendaFrom ${{ vars.StopSyncingAgendaFrom }} `
