@@ -137,5 +137,5 @@ jobs:
           -FeedbackAvailableTo ${{ vars.FeedbackAvailableTo }} `
           -IsSingleVoteEligibleForPrizeDraw ${{ vars.IsSingleVoteEligibleForPrizeDraw }} `
           -WaitingListCanVoteWithEmail ${{ vars.WaitingListCanVoteWithEmail }} `
-          -EloPasswordPhrase ${{ vars.EloPasswordPhrase }} `
+          -EloPasswordPhrase ${{ secrets.EloPasswordPhrase }} `
           -EloAllowedTimeInSecondsToSubmit ${{ vars.EloAllowedTimeInSecondsToSubmit }}
