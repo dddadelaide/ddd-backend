@@ -44,7 +44,7 @@ function Get-Parameters() {
   return @{
     "serverFarmResourceId"              = "/subscriptions/$SubscriptionId/resourceGroups/$AppServicePlanResourceGroup/providers/Microsoft.Web/serverfarms/$AppServicePlanName";
     "functionsAppName"                  = "$ConferenceShortName-functions-$AppEnvironment".ToLower();
-    "storageName"                       = "$($ConferenceShortName)functions$AppEnvironment".ToLower();
+    "storageName"                       = "$($ConferenceShortName)func$AppEnvironment".ToLower();
     "storageType"                       = "Standard_LRS";
     "dataStorageName"                   = "$($ConferenceShortName)data$AppEnvironment".ToLower();
     "dataStorageType"                   = "Standard_GRS";
