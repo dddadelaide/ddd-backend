@@ -46,7 +46,7 @@ This project contains backend functionality to run the DDD conferences, includin
   * `Deploy-Local.ps1`: Run locally to debug or develop the scripts using your user context in Azure
   * `Deploy.ps1`: Main deployment script that you need to call from CD pipeline
   * `azuredeploy.json`: Azure ARM template
-* `.vsts-ci.yml`: VSTS Continuous Integration definition for this project
+* `.github`: GitHub Actions workflows for this project
 
 ## Backend date parameters and usage
 

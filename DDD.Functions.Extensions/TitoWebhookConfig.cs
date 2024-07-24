@@ -4,6 +4,9 @@ using Microsoft.Azure.WebJobs.Host.Config;
 
 namespace DDD.Functions.Extensions
 {
+    /// <summary>
+    /// The connection string, table, and queue names are set in the azuredeploy.json ARM template, NOT via GHA variables.
+    /// </summary>
     public class TitoWebhookConfig : Attribute
     {
         [AppSetting(Default = "TitoWebhookSecret")]
