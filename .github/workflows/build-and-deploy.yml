@@ -112,7 +112,7 @@ jobs:
           -NewSessionNotificationLogicAppUrl ${{ vars.NewSessionNotificationLogicAppUrl }} `
           -DeploymentZipUrl ${{ steps.sas-token.outputs.URL }} `
           -SessionizeApiKey ${{ secrets.SessionizeApiKey }} `
-          -TitoApiBearerToken ${{ vars.TitoApiBearerToken }} `
+          -TitoApiBearerToken ${{ secrets.TitoApiBearerToken }} `
           -SubmissionsAvailableFrom ${{ vars.SubmissionsAvailableFrom }} `
           -SubmissionsAvailableTo ${{ vars.SubmissionsAvailableTo }} `
           -AnonymousSubmissions ${{ vars.AnonymousSubmissions }} `
@@ -131,7 +131,7 @@ jobs:
           -StopSyncingAgendaFrom ${{ vars.StopSyncingAgendaFrom }} `
           -SessionizeAgendaApiKey ${{ secrets.SessionizeAgendaApiKey }} `
           -TitoAccountId ${{ vars.TitoAccountId }} `
-          -TitoWebhookSecret ${{ vars.TitoWebhookSecret }} `
+          -TitoWebhookSecret ${{ secrets.TitoWebhookSecret }} `
           -TicketNumberWhileVoting ${{ vars.TicketNumberWhileVoting }} `
           -FeedbackAvailableFrom ${{ vars.FeedbackAvailableFrom }} `
           -FeedbackAvailableTo ${{ vars.FeedbackAvailableTo }} `
