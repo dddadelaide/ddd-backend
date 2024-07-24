@@ -78,7 +78,7 @@ Before deploying the application, a small amount of Azure infrastructure needs t
 
 ### AppInsights Voting Behaviour
 
-The backend application depends on programmatic access to the [Frontend Website's](https://github.com/dddwa/dddperth-website) Application Insights to pull and store information on voting behavior.
+The backend application depends on programmatic access to the [Frontend Website's](https://github.com/dddadelaide/dddadelaide-website) Application Insights to pull and store information on voting behavior.
 
 To supply this access, create an API key with `Read telemetry` permissions within the frontend website's Application Insights instance in the Azure Portal, and enter the Application ID and Key presented into the `AppInsightsApplicationId` and `AppInsightsApplicationKey` parameters.
 
